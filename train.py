@@ -37,7 +37,7 @@ class Net(pl.LightningModule):
         batch_size,
         epochs,
         t_total=100000,
-        config_path="config/model_config.json",
+        config_path="config/model_config_small.json",
         data_path="data/train.json",
         valid_examples=100,
         vocab_path="vocab/vocab.txt",
@@ -87,7 +87,7 @@ class Net(pl.LightningModule):
             self.dataset_valid,
             batch_size=self.batch_size,
             num_workers=8,
-            shuffle=True,
+            shuffle=False,
             drop_last=True,
         )
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--data_path",
-        default="data/train.json",
+        default="data/weibo_dev.json",
         type=str,
         required=False,
         help="原始训练语料",
