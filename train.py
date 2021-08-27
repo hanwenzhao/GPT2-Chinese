@@ -37,7 +37,7 @@ class Net(pl.LightningModule):
         batch_size,
         epochs,
         t_total=100000,
-        config_path="config/model_config_small.json",
+        config_path="config/model_config.json",
         data_path="data/train.json",
         valid_examples=100,
         vocab_path="vocab/vocab.txt",
@@ -54,7 +54,9 @@ class Net(pl.LightningModule):
         self.model_name = "bert_pretrained_model"
         self.config = GPT2Config.from_json_file(config_path)
         self.model = GPT2LMHeadModel(config=self.config)
-        self.data = [json.loads(line.strip()) for line in open(data_path)]
+        self.data = [json.loads(line.strip())['text'] for line in open(data_path)]
+        #self.data = [json.loads(line.strip()) for line in open(data_path)]
+        #print(type(self.data[0]))
         self.dataset_train = DS(
             self.data[:-valid_examples], vocab_path=vocab_path, max_length=max_length
         )
@@ -150,14 +152,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--data_path",
-        default="data/weibo_dev.json",
+        default="data/data_0813.json",
         type=str,
         required=False,
         help="原始训练语料",
     )
-    parser.add_argument("--epochs", default=5, type=int, required=False, help="训练循环")
+    parser.add_argument("--epochs", default=50, type=int, required=False, help="训练循环")
     parser.add_argument(
-        "--batch_size", default=8, type=int, required=False, help="训练batch size"
+        "--batch_size", default=5, type=int, required=False, help="训练batch size"
     )
     parser.add_argument("--lr", default=1.5e-4, type=float, required=False, help="学习率")
     parser.add_argument(
@@ -167,10 +169,10 @@ if __name__ == "__main__":
         "--max_length", default=1024, type=int, required=False, help="单条文本最长长度"
     )
     parser.add_argument(
-        "--eval_interval", default=100, type=int, required=False, help="eval 步数"
+        "--eval_interval", default=2000, type=int, required=False, help="eval 步数"      
     )
     parser.add_argument(
-        "--val_examples", default=100, type=int, required=False, help="选择多少验证集样本"
+        "--val_examples", default=5000, type=int, required=False, help="选择多少验证集样本"
     )
     parser.add_argument(
         "--t_total", default=100000, type=int, required=False, help="计划训练多少步"

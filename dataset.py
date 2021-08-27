@@ -22,14 +22,14 @@ if __name__ == '__main__':
     # change current directory
     os.chdir(sys.path[0])
     # walk through all the file
-    file_path = find_all_file("./data/wiki_zh_2019")
+    file_path = find_all_file("./data/wiki_zh")
     # load all json files into one
     data =[]
     for file in file_path:
         data.extend(read_json_file(file))
     # clip data for dev
-    data = data[:int(len(data)/1000)]
-    with open('./data/weibo_dev.json', 'w') as f:
+    #data = data[:int(len(data)/1000)]
+    with open('./data/weibo_all.json', 'w') as f:
         #print(f"\n Saving {len(data)} json into file ...\n")
         for json_line in data:
             json.dump(json_line, f)

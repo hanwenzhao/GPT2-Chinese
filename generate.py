@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import os
 import argparse
+import openpyxl
 from tqdm import trange
 from transformers import GPT2LMHeadModel, GPT2Config, BertTokenizer
 
@@ -133,10 +134,10 @@ def fast_sample_sequence(
     return generate
 
 
-def main():
+def main(prefix):
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", default="0", type=str, required=False, help="生成设备")
-    parser.add_argument("--length", default=512, type=int, required=False, help="生成长度")
+    parser.add_argument("--length", default=200, type=int, required=False, help="生成长度")
     parser.add_argument("--n_ctx", default=1024, type=int, required=False, help="生成时考虑的上下文长度")
     parser.add_argument(
         "--batch_size", default=1, type=int, required=False, help="生成的batch size"
@@ -165,13 +166,13 @@ def main():
     )
     parser.add_argument(
         "--model_path",
-        default="model/epoch=0-step=99.ckpt",
+        default="model/0813_epoch=5-step=91279.ckpt",
         type=str,
         required=False,
         help="模型路径",
     )
     parser.add_argument(
-        "--prefix", default="我", type=str, required=False, help="生成文章的开头"
+        "--prefix", default=prefix, type=str, required=False, help="生成文章的开头"
     )
     parser.add_argument("--no_wordpiece", action="store_true", help="不做word piece切词")
     parser.add_argument("--segment", action="store_true", help="中文以词为单位")
@@ -227,6 +228,48 @@ def main():
         )
         print(tokenizer.decode(out))
 
+        
+        with open('./output/08_13.txt', 'a') as f:
+            f.write(f'\n ############### {prefix} ############### \n')
+            f.write(tokenizer.decode(out))
+            f.write('\n')
+
 
 if __name__ == "__main__":
-    main()
+    """
+    wb_obj = openpyxl.load_workbook('./output/Label_List-20210805.xlsx')
+    worksheets = [wb_obj['Cutomers'], wb_obj['Sales Points']]
+    question_list = []
+    for ws in worksheets:
+        print(ws)
+        for row in range(2, ws.max_row+1):
+            cell_name = f"B{row}"
+            val = ws[cell_name].value
+            if val != None:
+                question_list.append(val)
+    """
+    question_list = [
+        '茅台',
+        '茅台酱香酒',
+        '茅台生肖酒',
+        '酱香酒',
+        '浓香酒',
+        '汾酒',
+        '西凤酒',
+        '酱香酒酿造工艺',
+        '酱酒12987',
+        '葡萄酒产区',
+        '普通酒品种',
+        '赤霞珠',
+        '西拉',
+        '雷司令',
+        '威士忌品牌',
+        '苏格兰威士忌',
+        '来一波',
+        '秒杀',
+        '5,4,3,2,1'
+    ]
+
+    for question in question_list:
+        print(question)
+        main(str(question))
